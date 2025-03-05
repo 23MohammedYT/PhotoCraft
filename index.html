@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="23MohammedYT">
+    <meta name="description" content="موقع Photocraft لتعديل الصور بسهولة واحترافية.">
+    <meta name="keywords" content="تعديل الصور, تحسين الجودة, تحويل الصيغ, قص الصور, تغيير الأبعاد">
+    <title>Photocraft - تعديل الصور</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/91f684aec9.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <header>
+        مرحبًا بك في Photocraft
+    </header>
+    <div class="container" id="container">
+        <h2>عن الموقع</h2>
+        <p>يتيح لك Photocraft تعديل الصور بسهولة، تحسين الجودة، تحويل الصيغ، قص الصور، وتغيير الأبعاد.</p>
+        <h3>رفع صورتك</h3>
+        <div class="upload-area" id="upload-area">
+            اسحب وأفلت الصورة هنا أو انقر لاختيار ملف
+            <input type="file" id="file-input" accept="image/*">
+            <p class="file-info" id="file-info"></p>
+        </div>
+        <p>أو استخدم الروابط:</p>
+        <input type="url" id="image-url" placeholder="أدخل رابط الصورة" style="width: 96%; padding: 10px;">
+        <button onclick="uploadFromUrl()">رفع من الرابط</button>
+        <button>رفع من Google Drive</button>
+        <button>رفع من Dropbox</button>
+    </div>
+    <div class="editor" id="editor">
+        <div class="title">Photocraft - تعديل الصور</div>
+        <div class="image-content">
+            <img id="image-preview" src="" alt="صورة المستخدم">
+            <div class="controls">
+                <div class="edit-tools">
+                    <button onclick="showTool('filter-tools')" title="الفلاتر"><i class="fa-solid fa-filter"></i></button>
+                    <button onclick="showTool('crop-tools')" title="القص"><i class="fa-solid fa-crop"></i></button>
+                    <button onclick="showTool('resize-tools')" title="تغيير الحجم"><i class="fa-solid fa-expand"></i></button>
+                    <button onclick="showTool('enhance-tools')" title="تحسين الصورة"><i class="fa-solid fa-images"></i></button>
+                </div>
+                <div id="filter-tools" class="tools active">
+                    <p class="title">الفلاتر</p>
+                    <div class="edit-tools filter-editor">
+                        <div>
+                            <button onclick="resetAllFilters()"></i>السطوع</button>
+                            <button onclick="adjustSaturation()">التشبع</button>
+                        </div>
+                        <div>
+                            <button onclick="invertColors()">عكس</button>
+                            <button onclick="grayscaleImage()">الرمادي</button>
+                        </div>
+                    </div>
+                    <p class="title">السطوع</p>
+                    <p><input type="range" id="brightness-range" min="0" max="200" value="100" oninput="updateBrightnessValue(this.value)"> <span id="brightness-value">100</span>%</p>
+                    <p class="title">التدوير والعكس</p>
+                    <div class="edit-tools">
+                        <button onclick="flipHorizontal()" title="عكس أفقي"><i class="fa-solid fa-arrows-alt-h"></i></button>
+                        <button onclick="flipVertical()" title="عكس عمودي"><i class="fa-solid fa-arrows-alt-v"></i></button>
+                        <button onclick="rotateImage()" title="تدوير"><i class="fa-solid fa-undo"></i></button>
+                        <button onclick="resetTransform()" title="عكس التدوير"><i class="fa-solid fa-rotate-right"></i></button>
+                    </div>
+                </div>
+                <div id="crop-tools" class="tools">
+                    <p>أداة القص تتيح لك تحديد جزء معين من الصورة لقصه. يمكنك سحب وتحديد المنطقة التي تريد الاحتفاظ بها.</p>
+                    <button onclick="cropImage()">قص الصورة</button>
+                </div>
+                <div id="resize-tools" class="tools">
+                    <p>أداة تغيير الحجم تتيح لك تعديل أبعاد الصورة. يمكنك إدخال العرض والارتفاع الجديدين أدناه:</p>
+                    <p>العرض: <input type="number" id="resize-width" placeholder="عرض الصورة بالبكسل"></p>
+                    <p>الارتفاع: <input type="number" id="resize-height" placeholder="ارتفاع الصورة بالبكسل"></p>
+                    <button onclick="resizeImage()">تغيير الحجم</button>
+                </div>
+                <div id="enhance-tools" class="tools">
+                    <p>أداة تحسين الصورة تتيح لك تحسين جودة الصورة من خلال تطبيق تقنيات تحسين مختلفة مثل زيادة الوضوح، تعديل الألوان، وتقليل الضوضاء.</p>
+                    <button onclick="enhanceImage()">تحسين الصورة</button>
+                </div>
+            </div>
+        </div>
+        <div class="image-state">
+            <button onclick="saveImage()">حفظ الصورة</button>
+            <button onclick="resetImage()">إعادة ضبط</button>
+        </div>
+    </div>
+    <footer>
+        جميع الحقوق محفوظة © 2025 23MohammedYT
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>
