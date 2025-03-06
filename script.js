@@ -28,7 +28,10 @@ function handleFile() {
     if (fileInput.files.length > 0) {
         const file = fileInput.files[0];
         fileInfo.textContent = "تم تحديد الملف: " + file.name;
-        displayImage(URL.createObjectURL(file));
+        const imageUrl = URL.createObjectURL(file);
+        const img = document.getElementById("image-preview");
+        img.setAttribute('data-original-src', imageUrl);
+        displayImage(imageUrl);
     }
 }
 
@@ -36,7 +39,65 @@ function uploadFromUrl() {
     const imageUrl = document.getElementById("image-url").value;
     if (imageUrl) {
         fileInfo.textContent = "تم تحميل الصورة من الرابط: " + imageUrl;
-        displayImage(imageUrl);
+        const img = document.getElementById("image-preview");
+        img.setAttribute('data-original-src', imageUrl);
+        img.src = imageUrl;
+        img.onload = () => {
+            displayImage(imageUrl);
+        };
+    } else {
+        alert("يرجى إدخال رابط صحيح!");
+    }
+}
+
+function uploadFromGoogleDrive() {
+    const CLIENT_ID = '170566788909-tt5e4j86lm563t091h58mpog1hlt3uh5.apps.googleusercontent.com';
+    const API_KEY = 'AIzaSyAi-UjrLt30DUUd3yV1qnH36jGvpYHu_mc';
+    const DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"];
+    const SCOPES = 'https://www.googleapis.com/auth/drive.readonly';
+
+    gapi.load('client:auth2', () => {
+        gapi.client.init({
+            apiKey: API_KEY,
+            clientId: CLIENT_ID,
+            discoveryDocs: DISCOVERY_DOCS,
+            scope: SCOPES
+        }).then(() => {
+            gapi.auth2.getAuthInstance().signIn().then(() => {
+                gapi.client.drive.files.list({
+                    'pageSize': 10,
+                    'fields': "nextPageToken, files(id, name, mimeType, webContentLink)"
+                }).then((response) => {
+                    const files = response.result.files;
+                    if (files && files.length > 0) {
+                        const file = files[0]; // For simplicity, we select the first file
+                        const imageUrl = file.webContentLink;
+                        fileInfo.textContent = "تم تحميل الصورة من Google Drive: " + file.name;
+                        const img = document.getElementById("image-preview");
+                        img.setAttribute('data-original-src', imageUrl);
+                        img.src = imageUrl;
+                        img.onload = () => {
+                            displayImage(imageUrl);
+                        };
+                    } else {
+                        alert("No files found.");
+                    }
+                });
+            });
+        });
+    });
+}
+
+function uploadFromDropbox() {
+    const imageUrl = prompt("Please enter the Dropbox image URL:");
+    if (imageUrl) {
+        fileInfo.textContent = "تم تحميل الصورة من Dropbox: " + imageUrl;
+        const img = document.getElementById("image-preview");
+        img.setAttribute('data-original-src', imageUrl);
+        img.src = imageUrl;
+        img.onload = () => {
+            displayImage(imageUrl);
+        };
     } else {
         alert("يرجى إدخال رابط صحيح!");
     }
@@ -85,21 +146,66 @@ adjustBrightness();
 
 function flipHorizontal() {
     const img = document.getElementById("image-preview");
-    img.style.transform = img.style.transform.includes("scaleX(-1)") ? img.style.transform.replace("scaleX(-1)", "scaleX(1)") : img.style.transform + " scaleX(-1)";
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const image = new Image();
+    image.src = img.src;
+    image.onload = () => {
+        canvas.width = image.width;
+        canvas.height = image.height;
+        ctx.translate(canvas.width, 0);
+        ctx.scale(-1, 1);
+        ctx.drawImage(image, 0, 0);
+        img.src = canvas.toDataURL();
+    };
 }
+
 function flipVertical() {
     const img = document.getElementById("image-preview");
-    img.style.transform = img.style.transform.includes("scaleY(-1)") ? img.style.transform.replace("scaleY(-1)", "scaleY(1)") : img.style.transform + " scaleY(-1)";
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const image = new Image();
+    image.src = img.src;
+    image.onload = () => {
+        canvas.width = image.width;
+        canvas.height = image.height;
+        ctx.translate(0, canvas.height);
+        ctx.scale(1, -1);
+        ctx.drawImage(image, 0, 0);
+        img.src = canvas.toDataURL();
+    };
 }
+
 function rotateImage() {
     const img = document.getElementById("image-preview");
-    const currentRotation = img.style.transform.match(/rotate\((\d+)deg\)/);
-    const newRotation = currentRotation ? (parseInt(currentRotation[1]) + 90) % 360 : 90;
-    img.style.transform = img.style.transform.replace(/rotate\(\d+deg\)/, "") + ` rotate(${newRotation}deg)`;
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const image = new Image();
+    image.src = img.src;
+    image.onload = () => {
+        canvas.width = image.height;
+        canvas.height = image.width;
+        ctx.translate(canvas.width / 2, canvas.height / 2);
+        ctx.rotate(90 * Math.PI / 180);
+        ctx.drawImage(image, -image.width / 2, -image.height / 2);
+        img.src = canvas.toDataURL();
+    };
 }
+
 function resetTransform() {
     const img = document.getElementById("image-preview");
-    img.style.transform = "";
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const image = new Image();
+    image.src = img.src;
+    image.onload = () => {
+        canvas.width = image.height;
+        canvas.height = image.width;
+        ctx.translate(canvas.width / 2, canvas.height / 2);
+        ctx.rotate(-90 * Math.PI / 180);
+        ctx.drawImage(image, -image.width / 2, -image.height / 2);
+        img.src = canvas.toDataURL();
+    };
 }
 
 let cropping = false;
@@ -131,6 +237,11 @@ function cropImage() {
     let startX, startY, endX, endY;
 
     cropper.addEventListener('mousedown', (e) => {
+        const rect = imagePreview.getBoundingClientRect();
+        if (e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom) {
+            cancelCrop();
+            return;
+        }
         startX = e.clientX;
         startY = e.clientY;
         cropArea.style.left = `${startX}px`;
@@ -142,6 +253,11 @@ function cropImage() {
 
     cropper.addEventListener('mouseup', (e) => {
         cropper.removeEventListener('mousemove', onMouseMove);
+        const rect = imagePreview.getBoundingClientRect();
+        if (e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom) {
+            cancelCrop();
+            return;
+        }
         endX = e.clientX;
         endY = e.clientY;
         applyCrop(startX, startY, endX, endY);
@@ -157,6 +273,11 @@ function cropImage() {
         cropArea.style.left = `${Math.min(currentX, startX)}px`;
         cropArea.style.top = `${Math.min(currentY, startY)}px`;
     }
+
+    function cancelCrop() {
+        document.body.removeChild(cropper);
+        cropping = false;
+    }
 }
 
 function applyCrop(startX, startY, endX, endY) {
@@ -165,10 +286,11 @@ function applyCrop(startX, startY, endX, endY) {
     const img = new Image();
     img.src = imagePreview.src;
     img.onload = () => {
+        const rect = imagePreview.getBoundingClientRect();
         const scaleX = img.width / imagePreview.clientWidth;
         const scaleY = img.height / imagePreview.clientHeight;
-        const cropX = (Math.min(startX, endX) - imagePreview.offsetLeft) * scaleX;
-        const cropY = (Math.min(startY, endY) - imagePreview.offsetTop) * scaleY;
+        const cropX = (Math.min(startX, endX) - rect.left) * scaleX;
+        const cropY = (Math.min(startY, endY) - rect.top) * scaleY;
         const cropWidth = Math.abs(endX - startX) * scaleX;
         const cropHeight = Math.abs(endY - startY) * scaleY;
 
@@ -178,6 +300,7 @@ function applyCrop(startX, startY, endX, endY) {
         imagePreview.src = canvas.toDataURL();
     };
 }
+
 function resizeImage() {
     const width = document.getElementById("resize-width").value;
     const height = document.getElementById("resize-height").value;
