@@ -15,7 +15,7 @@ header {
 }
 .container, .editor {
     max-width: 700px;
-    margin: 20px auto;
+    margin: 20px auto 75px;
     padding: 20px;
     background: #fff;
     border-radius: 10px;
@@ -62,6 +62,7 @@ header {
     width: 100%;
     height: 100%;
     object-fit: contain;
+    pointer-events: none;
 }
 .controls {
     border: 0.2px solid #333;
@@ -79,12 +80,9 @@ header {
     width: 100%;
     margin-bottom: 20px;
 }
-.filter-editor {
-    display: flex;
-    flex-direction: column;
-}
-.filter-editor button {
-    width: 44%;
+.edit-tools button {
+    width: 90%;
+    margin-bottom: 10px;
 }
 .controls button {
     margin: 5px;
@@ -118,4 +116,34 @@ footer {
     position: fixed;
     bottom: 0; 
     width: 100%;
+}
+
+@media (max-width: 480px) {
+    /* Adjustments for smaller screens */
+    header {
+        font-size: 20px;
+        padding: 15px;
+    }
+    .container, .editor {
+        margin-top: 10px;
+        padding: 15px;
+    }
+    .editor .title {
+        width: 100%;
+    }
+    .upload-area {
+        padding: 15px;
+    }
+    .editor .image-content {
+        flex-direction: column;
+        align-items: center;
+    }
+    .editor img {
+        max-width: 100%;
+        height: auto;
+    }
+    .controls {
+        width: 100%;
+        margin-top: 20px;
+    }
 }
