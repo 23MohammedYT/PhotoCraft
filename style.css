@@ -148,7 +148,7 @@ footer {
     }
 
     /* Ads Section */
-    iframe:nth-child(0) {
+    iframe:first-of-type {
         width: 100%;
     }
 }
