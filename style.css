@@ -146,4 +146,9 @@ footer {
         width: 100%;
         margin-top: 20px;
     }
+
+    /* Ads Section */
+    iframe:nth-child(0) {
+        width: 100%;
+    }
 }
