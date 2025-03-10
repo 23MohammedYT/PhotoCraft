@@ -15,7 +15,7 @@ header {
 }
 .container, .editor {
     max-width: 700px;
-    margin: 20px auto 75px;
+    margin: 0 auto 75px;
     padding: 20px;
     background: #fff;
     border-radius: 10px;
@@ -125,7 +125,6 @@ footer {
         padding: 15px;
     }
     .container, .editor {
-        margin-top: 10px;
         padding: 15px;
     }
     .editor .title {
