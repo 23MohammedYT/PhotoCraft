@@ -36,10 +36,11 @@
                 <p class="file-info" id="file-info"></p>
             </div>
             <p>أو استخدم الروابط:</p>
-            <input type="url" id="image-url" placeholder="أدخل رابط الصورة" style="width: 96%; padding: 10px;">
-            <button onclick="uploadFromUrl()">رفع من الرابط</button>
-            <button onclick="uploadFromGoogleDrive()">رفع من Google Drive</button>
-            <button onclick="uploadFromDropbox()">رفع من Dropbox</button>
+            <div class="input-container">
+                <input type="url" id="image-url" placeholder="أدخل رابط الصورة" class="styled-input">
+                <button onclick="pasteUrl()" class="paste-button"><i class="fa-solid fa-clipboard"></i> &nbsp; لصق</button>
+                <button onclick="uploadFromUrl()" class="enter-button">إدخال</button>
+            </div>
             <script async="async" data-cfasync="false" src="//pl26081062.effectiveratecpm.com/90d6657cc45fb5c000c6ba7f6ec5781f/invoke.js"></script>
             <div id="container-90d6657cc45fb5c000c6ba7f6ec5781f"></div>
         </div>
