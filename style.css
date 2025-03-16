@@ -15,7 +15,7 @@ header {
 }
 .container, .editor {
     max-width: 700px;
-    margin: 0 auto 75px;
+    margin: 20px auto 75px;
     padding: 20px;
     background: #fff;
     border-radius: 10px;
@@ -37,6 +37,41 @@ header {
     margin-top: 10px;
     font-weight: bold;
     color: #333;
+}
+.input-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+    width: 100%;
+}
+
+.styled-input {
+    flex: 1;
+    padding: 10px;
+    padding-left: 60px; /* Space for the paste button */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.paste-button {
+    position: absolute;
+    left: 62px;
+    padding: 5px 10px;
+    border: none;
+    background-color: #28a745;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.enter-button {
+    margin-right: 5px;
+    padding: 10px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
 }
 .editor {
     direction: ltr;
@@ -125,6 +160,7 @@ footer {
         padding: 15px;
     }
     .container, .editor {
+        margin-top: 10px;
         padding: 15px;
     }
     .editor .title {
@@ -144,10 +180,5 @@ footer {
     .controls {
         width: 100%;
         margin-top: 20px;
-    }
-
-    /* Ads Section */
-    iframe:first-of-type {
-        width: 100%;
     }
 }
