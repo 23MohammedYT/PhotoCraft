@@ -50,57 +50,13 @@ function uploadFromUrl() {
     }
 }
 
-function uploadFromGoogleDrive() {
-    const CLIENT_ID = '170566788909-tt5e4j86lm563t091h58mpog1hlt3uh5.apps.googleusercontent.com';
-    const API_KEY = 'AIzaSyAi-UjrLt30DUUd3yV1qnH36jGvpYHu_mc';
-    const DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"];
-    const SCOPES = 'https://www.googleapis.com/auth/drive.readonly';
-
-    gapi.load('client:auth2', () => {
-        gapi.client.init({
-            apiKey: API_KEY,
-            clientId: CLIENT_ID,
-            discoveryDocs: DISCOVERY_DOCS,
-            scope: SCOPES
-        }).then(() => {
-            gapi.auth2.getAuthInstance().signIn().then(() => {
-                gapi.client.drive.files.list({
-                    'pageSize': 10,
-                    'fields': "nextPageToken, files(id, name, mimeType, webContentLink)"
-                }).then((response) => {
-                    const files = response.result.files;
-                    if (files && files.length > 0) {
-                        const file = files[0]; // For simplicity, we select the first file
-                        const imageUrl = file.webContentLink;
-                        fileInfo.textContent = "تم تحميل الصورة من Google Drive: " + file.name;
-                        const img = document.getElementById("image-preview");
-                        img.setAttribute('data-original-src', imageUrl);
-                        img.src = imageUrl;
-                        img.onload = () => {
-                            displayImage(imageUrl);
-                        };
-                    } else {
-                        alert("No files found.");
-                    }
-                });
-            });
-        });
+function pasteUrl() {
+    navigator.clipboard.readText().then(text => {
+        document.getElementById("image-url").value = text;
+        uploadFromUrl();
+    }).catch(err => {
+        alert("Failed to read clipboard contents: " + err);
     });
-}
-
-function uploadFromDropbox() {
-    const imageUrl = prompt("Please enter the Dropbox image URL:");
-    if (imageUrl) {
-        fileInfo.textContent = "تم تحميل الصورة من Dropbox: " + imageUrl;
-        const img = document.getElementById("image-preview");
-        img.setAttribute('data-original-src', imageUrl);
-        img.src = imageUrl;
-        img.onload = () => {
-            displayImage(imageUrl);
-        };
-    } else {
-        alert("يرجى إدخال رابط صحيح!");
-    }
 }
 
 function displayImage(src) {
@@ -149,6 +105,7 @@ function flipHorizontal() {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     const image = new Image();
+    image.crossOrigin = "anonymous";
     image.src = img.src;
     image.onload = () => {
         canvas.width = image.width;
@@ -325,6 +282,7 @@ function enhanceImage() {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     const image = new Image();
+    image.crossOrigin = "anonymous"; // Allow cross-origin requests
     image.src = img.src;
     image.onload = () => {
         canvas.width = image.width;
@@ -332,7 +290,11 @@ function enhanceImage() {
         ctx.filter = "contrast(120%) brightness(110%) saturate(120%)";
         ctx.imageRendering = "crisp-edges"; // Enhance image quality without changing size
         ctx.drawImage(image, 0, 0, image.width, image.height);
-        img.src = canvas.toDataURL();
+        img.src = canvas.toDataURL("image/png");
+        img.setAttribute('data-original-src', img.src); // Update original source
+    };
+    image.onerror = () => {
+        alert("Failed to load image. Please ensure the image is from a same-origin source or a CORS-enabled source.");
     };
 }
 
